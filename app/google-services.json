@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53682010565",
+    "project_id": "taxitag-1e366",
+    "storage_bucket": "taxitag-1e366.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53682010565:android:26dc572c1118520d31b3ac",
+        "android_client_info": {
+          "package_name": "com.silvacorp.taxitag"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCayRv30ruEeu0WiOFl2dZwbSEdDaC6G7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
