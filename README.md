@@ -38,8 +38,9 @@ TaxiTag es una aplicación para dispositivos Android diseñada para simplificar 
 
 ## Preview
 <p align="center">
-  <img src="/images/Screenshot_20240109_125703.png" width=250/>&nbsp;&nbsp;&nbsp;
-  <img src="/images/register.png" width=250/>&nbsp;&nbsp;&nbsp;
-  <img src="/images/list.png" width=250/>&nbsp;&nbsp;&nbsp;
-  <img src="/images/map_taxi.png" width=250/>
+  <img src="/images/Screenshot_20240109_125703.png" width=150/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/register.png" width=150/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/list.png" width=150/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/map_taxi.png" width=150/>
+  <img src="/images/all_taxis.png" width=150/>
 </p>
