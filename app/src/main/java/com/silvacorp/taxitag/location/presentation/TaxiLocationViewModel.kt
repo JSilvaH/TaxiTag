@@ -68,7 +68,7 @@ class TaxiLocationViewModel @Inject constructor(
                         _taxiMayor.value = TaxiState(taxiInfo = result.data?: Taxi(0, 0, 0L, "0, 0", false, 1 ),)
                     }
 
-                    is Result.Loading -> TODO()
+                    is Result.Loading -> {}
                     is Result.Error -> _message.value = "Error"
                 }
                 repository.getLocationTaxi(numberTaxi).collect() { result ->
@@ -77,7 +77,9 @@ class TaxiLocationViewModel @Inject constructor(
                             _taxiMinor.value = TaxiState(taxiInfo =result.data?: Taxi(0, 0, 0L, "0, 0", false, 1 ))
                         }
 
-                        is Result.Loading -> TODO()
+                        is Result.Loading -> {
+
+                        }
                         is Result.Error -> _message.value = "Error"
                     }
                 }
