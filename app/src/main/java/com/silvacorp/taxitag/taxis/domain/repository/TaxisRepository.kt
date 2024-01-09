@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaxisRepository {
     suspend fun getAllTaxis(): Flow<Result<List<Taxi>>>
+    suspend fun getLocationTaxi(numberTaxi: Int): Flow<Result<Taxi>>
 }

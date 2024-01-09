@@ -55,5 +55,10 @@ class InfoTaxisRepository @Inject constructor(
 
     }
 
+    override suspend fun getLocationTaxi(numberTaxi: Int): Flow<Result<Taxi>> = flow {
+        val taxi = dao.getLocationTaxi(numberTaxi)
+        emit(Result.Success(taxi))
+    }
+
 
 }

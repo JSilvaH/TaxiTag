@@ -22,11 +22,13 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.silvacorp.taxitag.common.unixToDate
 import com.silvacorp.taxitag.location.presentation.ui.theme.TaxiTagTheme
 import com.silvacorp.taxitag.register.data.database.entities.Taxi
+import com.silvacorp.taxitag.register.presentation.TaxiState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TaxiLocationActivity : ComponentActivity() {
-    val viewModel: TaxiLocationViewModel by viewModels()
+    private val viewModel: TaxiLocationViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -35,6 +37,10 @@ class TaxiLocationActivity : ComponentActivity() {
         val number = intent.extras?.getString("number", "0")
         val location = intent.extras?.getString("location")
         val dateSeen = intent.extras?.getString("dateSeen", "0")
+        val taxiNumber = intent.extras?.getInt("taxiNumber", 0)
+        viewModel.getLocationTaxiMayor(taxiNumber ?: 0)
+
+
 
         setContent {
             TaxiTagTheme {
@@ -43,90 +49,101 @@ class TaxiLocationActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (showAllTaxis){
-                        val list  = viewModel.locations.collectAsState()
+                    val taxi = viewModel.taxiMayor.collectAsState()
+                    if (showAllTaxis) {
+                        val list = viewModel.locations.collectAsState()
                         MyMapsALlTaxis(locationsTaxis = list.value)
-                    }else {
-                        MyMap(
-                            location!!,
-                            number!!.toInt(),
-                            dateSeen!!
-                        )
-                    }
+                    } else {
+                        if (taxiNumber!! > 0) {
+                            MyMap(
+                                location = taxi.value.taxiInfo.location,
+                                number = taxi.value.taxiInfo.economicalNumber,
+                                dateSeen = taxi.value.taxiInfo.dateSeen.toString()
+                            )
 
+                        }else {
+                            MyMap(
+                                location!!,
+                                number!!.toInt(),
+                                dateSeen!!
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 //    AIzaSyCN0AOeOrhaWdXitmbj4BQCoyEfFILi0zI
-}
 
-@Composable
-fun MyMapsALlTaxis(locationsTaxis: List<Taxi>) {
-    val context = LocalContext.current
-    val ags = LatLng(21.884397, -102.293982)
 
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(ags, 13f)
+    @Composable
+    fun MyMapsALlTaxis(locationsTaxis: List<Taxi>) {
+        val context = LocalContext.current
+        val ags = LatLng(21.884397, -102.293982)
+
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(ags, 13f)
+        }
+
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState
+        ) {
+            locationsTaxis.forEach { taxi ->
+                val parts = taxi.location.split(", ")
+                val latitude = parts[0]
+                val longitude = parts[1]
+
+                val location = LatLng(latitude.toDouble(), longitude.toDouble())
+                Marker(
+                    position = location,
+                    title = taxi.economicalNumber.toString(),
+                    snippet = taxi.dateSeen.toInt().unixToDate(),
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                )
+            }
+
+        }
     }
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        locationsTaxis.forEach { taxi ->
-            val parts = taxi.location.split(", ")
-            val latitude = parts[0]
-            val longitude = parts[1]
+    @Composable
+    fun MyMap(location: String, number: Int, dateSeen: String) {
+        val parts = location.split(", ")
+        val latitude = parts[0]
+        val longitude = parts[1]
 
-            val location = LatLng(latitude.toDouble(), longitude.toDouble())
+        val ags = LatLng(latitude.toDouble(), longitude.toDouble())
+
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(ags, 12f)
+        }
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState
+        ) {
             Marker(
-                position = location,
-                title = taxi.economicalNumber.toString(),
-                snippet = taxi.dateSeen.toInt().unixToDate(),
+                position = ags,
+                title = number.toString(),
+                snippet = dateSeen,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             )
         }
-
     }
-}
 
-@Composable
-fun MyMap(location: String, number: Int, dateSeen: String) {
-    val parts = location.split(", ")
-    val latitude = parts[0]
-    val longitude = parts[1]
-
-    val ags = LatLng(latitude.toDouble(), longitude.toDouble())
-
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(ags, 12f)
-    }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        Marker(
-            position = ags,
-            title = number.toString(),
-            snippet = dateSeen,
-            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+    @Composable
+    fun Greeting2(name: String, modifier: Modifier = Modifier) {
+        Text(
+            text = "Hello $name!",
+            modifier = modifier
         )
     }
-}
 
-@Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    TaxiTagTheme {
-        Greeting2("Android")
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview2() {
+        TaxiTagTheme {
+            Greeting2("Android")
+        }
     }
+
 }

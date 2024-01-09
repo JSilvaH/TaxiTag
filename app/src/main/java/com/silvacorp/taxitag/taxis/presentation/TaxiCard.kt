@@ -65,6 +65,7 @@ fun TaxiCard(taxi: Taxi) {
                                 intent.putExtra("number", taxi.economicalNumber)
                                 intent.putExtra("location", taxi.location)
                                 intent.putExtra("dataSeen", taxi.dateSeen.toInt().unixToDate())
+                                intent.putExtra("taxiNumber", 0)
                                 context.startActivity(intent)
 
                             },

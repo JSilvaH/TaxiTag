@@ -12,6 +12,7 @@ import com.silvacorp.taxitag.common.components.InfoLocation
 import com.silvacorp.taxitag.location.domain.repository.TaxiLocationRepository
 import com.silvacorp.taxitag.register.data.database.entities.Taxi
 import com.silvacorp.taxitag.register.domain.repository.repository.TaxiRepository
+import com.silvacorp.taxitag.register.presentation.TaxiState
 import com.silvacorp.taxitag.taxis.domain.repository.TaxisRepository
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,12 @@ class TaxiLocationViewModel @Inject constructor(
 
     private val _locations = MutableStateFlow<List<Taxi>>(emptyList())
     val locations: StateFlow<List<Taxi>> = _locations
+
+    private val _taxiMayor = MutableStateFlow(TaxiState())
+    val taxiMayor: StateFlow<TaxiState> = _taxiMayor
+
+    private val _taxiMinor = MutableStateFlow(TaxiState())
+    val taxiMinor: StateFlow<TaxiState> = _taxiMinor
 
     private val _message = mutableStateOf("")
     val message: State<String> = _message
@@ -50,6 +57,32 @@ class TaxiLocationViewModel @Inject constructor(
             }
 
 
+        }
+    }
+
+     fun getLocationTaxiMayor(numberTaxi: Int) {
+        viewModelScope.launch {
+            repository.getLocationTaxi(numberTaxi).collect() { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _taxiMayor.value = TaxiState(taxiInfo = result.data?: Taxi(0, 0, 0L, "0, 0", false, 1 ),)
+                    }
+
+                    is Result.Loading -> TODO()
+                    is Result.Error -> _message.value = "Error"
+                }
+                repository.getLocationTaxi(numberTaxi).collect() { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            _taxiMinor.value = TaxiState(taxiInfo =result.data?: Taxi(0, 0, 0L, "0, 0", false, 1 ))
+                        }
+
+                        is Result.Loading -> TODO()
+                        is Result.Error -> _message.value = "Error"
+                    }
+                }
+
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.silvacorp.taxitag.register.presentation.TaxiState
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
@@ -100,7 +101,7 @@ class RegisterViewModel @Inject constructor(
                     is Result.Success -> {
                         _mayor.value = TaxiState(
                             false,
-                            result.data,
+                            result.data?: Taxi(0, 0, 0L, "21.884397, -102.293982", false, 1 ),
                             ""
                         )
                     }
@@ -126,7 +127,7 @@ class RegisterViewModel @Inject constructor(
                     is Result.Success -> {
                         _minor.value = TaxiState(
                             false,
-                            result.data,
+                            result.data?: Taxi(0, 0, 0L, "21.884397, -102.293982", false, 1 ),
                             ""
                         )
                     }

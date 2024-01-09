@@ -22,4 +22,8 @@ interface TaxiDao {
     @Query("SELECT * FROM taxi_info ORDER BY economicalNumber ASC LIMIT 1")
     suspend fun getMinorTaxi(): Taxi
 
+    @Query("SELECT * FROM taxi_info WHERE economicalNumber = :numberTaxi ORDER BY dateSeen DESC LIMIT 1")
+    suspend fun getLocationTaxi(numberTaxi: Int): Taxi
+
+
 }

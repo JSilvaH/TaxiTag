@@ -84,7 +84,11 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         startLocationUpdates()
         setContent {
-            var locationPermissionsGranted by remember { mutableStateOf(areLocationPermissionsAlreadyGranted()) }
+            var locationPermissionsGranted by remember {
+                mutableStateOf(
+                    areLocationPermissionsAlreadyGranted()
+                )
+            }
             var shouldShowPermissionRationale by remember {
                 mutableStateOf(
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -96,7 +100,12 @@ class MainActivity : ComponentActivity() {
             }
 
             var currentPermissionsStatus by remember {
-                mutableStateOf(decideCurrentPermissionStatus(locationPermissionsGranted, shouldShowPermissionRationale))
+                mutableStateOf(
+                    decideCurrentPermissionStatus(
+                        locationPermissionsGranted,
+                        shouldShowPermissionRationale
+                    )
+                )
             }
 
             val locationPermissions = arrayOf(
@@ -107,16 +116,21 @@ class MainActivity : ComponentActivity() {
             val locationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions(),
                 onResult = { permissions ->
-                    locationPermissionsGranted = permissions.values.reduce { acc, isPermissionGranted ->
-                        acc && isPermissionGranted
-                    }
+                    locationPermissionsGranted =
+                        permissions.values.reduce { acc, isPermissionGranted ->
+                            acc && isPermissionGranted
+                        }
 
                     if (!locationPermissionsGranted) {
                         shouldShowPermissionRationale =
                             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
                     }
-                    shouldDirectUserToApplicationSettings = !shouldShowPermissionRationale && !locationPermissionsGranted
-                    currentPermissionsStatus = decideCurrentPermissionStatus(locationPermissionsGranted, shouldShowPermissionRationale)
+                    shouldDirectUserToApplicationSettings =
+                        !shouldShowPermissionRationale && !locationPermissionsGranted
+                    currentPermissionsStatus = decideCurrentPermissionStatus(
+                        locationPermissionsGranted,
+                        shouldShowPermissionRationale
+                    )
                 })
 
             val lifecycleOwner = LocalLifecycleOwner.current
@@ -124,7 +138,8 @@ class MainActivity : ComponentActivity() {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_START &&
                         !locationPermissionsGranted &&
-                        !shouldShowPermissionRationale) {
+                        !shouldShowPermissionRationale
+                    ) {
                         locationPermissionLauncher.launch(locationPermissions)
                     }
                 }
@@ -152,8 +167,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if(viewModel.success.value){
-                        TaxiDialog(text = "Se registro correctamente ", showDialog = {viewModel.onDismiss()} )
+                    if (viewModel.success.value) {
+                        TaxiDialog(
+                            text = "Se registro correctamente ",
+                            showDialog = { viewModel.onDismiss() })
                     }
 
                     Box(
@@ -207,7 +224,10 @@ class MainActivity : ComponentActivity() {
                                         text = mayor.value.taxiInfo?.economicalNumber.toString(),
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(bottom = 15.dp),
+                                            .padding(bottom = 15.dp)
+                                            .clickable {
+                                                navigateToMapTaxi(mayor.value.taxiInfo?.economicalNumber.toString())
+                                            },
                                         textAlign = TextAlign.Center,
                                         fontFamily = autoroneRegular
                                     )
@@ -227,7 +247,10 @@ class MainActivity : ComponentActivity() {
                                         text = minor.value.taxiInfo?.economicalNumber.toString(),
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(bottom = 15.dp),
+                                            .padding(bottom = 15.dp)
+                                            .clickable {
+                                                navigateToMapTaxi(minor.value.taxiInfo?.economicalNumber.toString())
+                                            },
                                         textAlign = TextAlign.Center,
                                         fontFamily = autoroneRegular
                                     )
@@ -253,10 +276,11 @@ class MainActivity : ComponentActivity() {
                             )
                             Text(
                                 text = "Ver todos en el mapa",
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(top = 10.dp)
                                     .clickable {
-                                        navigateToMapTaxi()
+                                        navigateToMapTaxi(null)
                                     },
                                 textAlign = TextAlign.Center,
                                 fontFamily = autoroneRegular
@@ -272,27 +296,33 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun navigateToMapTaxi() {
+    private fun navigateToMapTaxi(taxiNumber: String?) {
         val intent = Intent(this, TaxiLocationActivity::class.java)
-        intent.putExtra("showAllTaxis", true)
+        if(taxiNumber.isNullOrBlank()) {
+            intent.putExtra("showAllTaxis", true)
+            intent.putExtra("taxiNumber", 0)
+        }else {
+            intent.putExtra("showAllTaxis", false)
+            intent.putExtra("taxiNumber", taxiNumber.toInt())
+        }
         startActivity(intent)
     }
 
     private fun sendNumber() {
-        if (isValid()){
+        if (isValid()) {
             viewModel.insertTaxi(
                 createTaxi(viewModel.numberEconomic.value.toInt())
             )
-        }else {
+        } else {
             Toast.makeText(this, viewModel.msg.value, Toast.LENGTH_SHORT).show()
             viewModel.onClear()
         }
     }
 
-    private fun isValid(): Boolean{
+    private fun isValid(): Boolean {
         var dataIsCorrect = true
 
-        if (viewModel.numberEconomic.value == ""){
+        if (viewModel.numberEconomic.value == "") {
             dataIsCorrect = false
             viewModel.changeMessage("El Campo no puede ir vacio")
         }
@@ -319,7 +349,6 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, TaxisActivity::class.java)
         startActivity(intent)
     }
-
 
 
     private fun startLocationUpdates() {
@@ -357,17 +386,23 @@ class MainActivity : ComponentActivity() {
     private fun areLocationPermissionsAlreadyGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun openApplicationSettings() {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", packageName, null)
+        ).also {
             startActivity(it)
         }
     }
 
-    private fun decideCurrentPermissionStatus(locationPermissionsGranted: Boolean,
-                                              shouldShowPermissionRationale: Boolean): String {
+    private fun decideCurrentPermissionStatus(
+        locationPermissionsGranted: Boolean,
+        shouldShowPermissionRationale: Boolean
+    ): String {
         return if (locationPermissionsGranted) "Granted"
         else if (shouldShowPermissionRationale) "Rejected"
         else "Denied"
