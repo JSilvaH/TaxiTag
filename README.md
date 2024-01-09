@@ -35,3 +35,11 @@ TaxiTag es una aplicación para dispositivos Android diseñada para simplificar 
 2. Abre el proyecto en Android Studio.
 3. Configura las credenciales de Firebase.
 4. Compila y ejecuta la aplicación en tu dispositivo Android.
+
+## Preview
+<p align="center">
+  <img src="/images/Screenshot_20240109_125703.png" width=250/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/register.png" width=250/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/list.png" width=250/>&nbsp;&nbsp;&nbsp;
+  <img src="/images/map_taxi.png" width=250/>
+</p>
